@@ -2,7 +2,7 @@ package org.iut.refactoring;
 
 import java.util.UUID;
 
-public class Employee {
+public class Employe {
     String id;
     TypeEmploye type;
     String name;
@@ -10,7 +10,7 @@ public class Employee {
     int experience;
     String division;
 
-    public Employee(TypeEmploye type, String name, double salaireBase, int experience, String division) {
+    public Employe(TypeEmploye type, String name, double salaireBase, int experience, String division) {
         this.id = UUID.randomUUID().toString();
         this.type = type;
         this.name = name;
