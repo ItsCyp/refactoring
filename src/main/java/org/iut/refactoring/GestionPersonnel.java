@@ -10,7 +10,7 @@ public class GestionPersonnel {
     private final ArrayList<String> logs = new ArrayList<>();
 
     public void ajouteSalarie(String typeStr, String nom, double salaireDeBase, int experience, String equipe) {
-        TypeEmploye type = TypeEmploye.valueOf(typeStr.replace(" ", "_"));
+        TypeEmploye type = TypeEmploye.fromString(typeStr);
 
         Employe emp = new Employe(type, nom, salaireDeBase, experience, equipe);
         employes.add(emp);
@@ -34,30 +34,32 @@ public class GestionPersonnel {
             return 0;
         }
 
-        String type = emp.type.name();
+        String type = emp.type.getLabel();
         double salaireDeBase = emp.salaireBase;
         int experience = emp.experience;
 
         double salaireFinal = salaireDeBase;
-        if (type.equals("DEVELOPPEUR")) {
-            salaireFinal = salaireDeBase * 1.2;
-            if (experience > 5) {
-                salaireFinal = salaireFinal * 1.15;
+        switch (type) {
+            case "DEVELOPPEUR" -> {
+                salaireFinal = salaireDeBase * 1.2;
+                if (experience > 5) {
+                    salaireFinal = salaireFinal * 1.15;
+                }
+                if (experience > 10) {
+                    salaireFinal = salaireFinal * 1.05; // bonus
+                }
             }
-            if (experience > 10) {
-                salaireFinal = salaireFinal * 1.05; // bonus
+            case "CHEF DE PROJET" -> {
+                salaireFinal = salaireDeBase * 1.5;
+                if (experience > 3) {
+                    salaireFinal = salaireFinal * 1.1;
+                }
+                salaireFinal = salaireFinal + 5000; // bonus
             }
-        } else if (type.equals("CHEF DE PROJET")) {
-            salaireFinal = salaireDeBase * 1.5;
-            if (experience > 3) {
-                salaireFinal = salaireFinal * 1.1;
-            }
-            salaireFinal = salaireFinal + 5000; // bonus
-        } else if (type.equals("STAGIAIRE")) {
-            salaireFinal = salaireDeBase * 0.6;
+            case "STAGIAIRE" -> salaireFinal = salaireDeBase * 0.6;
+
             // Pas de bonus pour les stagiaires
-        } else {
-            salaireFinal = salaireDeBase;
+            default -> salaireFinal = salaireDeBase;
         }
         return salaireFinal;
     }

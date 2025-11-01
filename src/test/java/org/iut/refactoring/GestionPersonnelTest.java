@@ -26,17 +26,17 @@ class GestionPersonnelTest {
         gestionPersonnel.ajouteSalarie(type, nom, salaireDeBase, experience, equipe);
 
         // Then
-        assertEquals(1, gestionPersonnel.employes.size());
-        Object[] employe = gestionPersonnel.employes.get(0);
-        assertEquals(type, employe[1]);
-        assertEquals(nom, employe[2]);
-        assertEquals(salaireDeBase, employe[3]);
-        assertEquals(experience, employe[4]);
-        assertEquals(equipe, employe[5]);
+        assertEquals(1, gestionPersonnel.getEmployes().size());
+        Employe employe = gestionPersonnel.getEmployes().get(0);
+        assertEquals(type, employe.type.getLabel());
+        assertEquals(nom, employe.name);
+        assertEquals(salaireDeBase, employe.salaireBase);
+        assertEquals(experience, employe.experience);
+        assertEquals(equipe, employe.division);
 
         // Vérifier le salaire final calculé (50000 * 1.2 = 60000)
-        String employeId = (String) employe[0];
-        assertEquals(60000.0, gestionPersonnel.salairesEmployes.get(employeId), 0.01);
+        String employeId = employe.id;
+        assertEquals(60000.0, gestionPersonnel.getSalairesEmployes().get(employeId), 0.01);
     }
 
     @Test
@@ -52,11 +52,11 @@ class GestionPersonnelTest {
         gestionPersonnel.ajouteSalarie(type, nom, salaireDeBase, experience, equipe);
 
         // Then
-        assertEquals(1, gestionPersonnel.employes.size());
+        assertEquals(1, gestionPersonnel.getEmployes().size());
 
         // Vérifier le salaire final calculé (50000 * 1.2 * 1.15 = 69000)
-        String employeId = (String) gestionPersonnel.employes.get(0)[0];
-        assertEquals(69000.0, gestionPersonnel.salairesEmployes.get(employeId), 0.01);
+        String employeId = gestionPersonnel.getEmployes().get(0).id;
+        assertEquals(69000.0, gestionPersonnel.getSalairesEmployes().get(employeId), 0.01);
     }
 
     @Test
@@ -72,14 +72,14 @@ class GestionPersonnelTest {
         gestionPersonnel.ajouteSalarie(type, nom, salaireDeBase, experience, equipe);
 
         // Then
-        assertEquals(1, gestionPersonnel.employes.size());
-        Object[] employe = gestionPersonnel.employes.get(0);
-        assertEquals(type, employe[1]);
-        assertEquals(nom, employe[2]);
+        assertEquals(1, gestionPersonnel.getEmployes().size());
+        Employe employe = gestionPersonnel.getEmployes().get(0);
+        assertEquals(type, employe.type.getLabel());
+        assertEquals(nom, employe.name);
 
-        // Vérifier le salaire final calculé (60000 * 1.5 = 90000)
-        String employeId = (String) employe[0];
-        assertEquals(90000.0, gestionPersonnel.salairesEmployes.get(employeId), 0.01);
+        // Vérifier le salaire final calculé (60000 * 1.5 + 5000 = 95000)
+        String employeId = employe.id;
+        assertEquals(95000.0, gestionPersonnel.getSalairesEmployes().get(employeId), 0.01);
     }
 
     @Test
@@ -95,11 +95,11 @@ class GestionPersonnelTest {
         gestionPersonnel.ajouteSalarie(type, nom, salaireDeBase, experience, equipe);
 
         // Then
-        assertEquals(1, gestionPersonnel.employes.size());
+        assertEquals(1, gestionPersonnel.getEmployes().size());
 
-        // Vérifier le salaire final calculé (60000 * 1.5 * 1.1 = 99000)
-        String employeId = (String) gestionPersonnel.employes.get(0)[0];
-        assertEquals(99000.0, gestionPersonnel.salairesEmployes.get(employeId), 0.01);
+        // Vérifier le salaire final calculé (60000 * 1.5 * 1.1 + 5000 = 104000)
+        String employeId = gestionPersonnel.getEmployes().get(0).id;
+        assertEquals(104000.0, gestionPersonnel.getSalairesEmployes().get(employeId), 0.01);
     }
 
     @Test
@@ -115,14 +115,14 @@ class GestionPersonnelTest {
         gestionPersonnel.ajouteSalarie(type, nom, salaireDeBase, experience, equipe);
 
         // Then
-        assertEquals(1, gestionPersonnel.employes.size());
-        Object[] employe = gestionPersonnel.employes.get(0);
-        assertEquals(type, employe[1]);
-        assertEquals(nom, employe[2]);
+        assertEquals(1, gestionPersonnel.getEmployes().size());
+        Employe employe = gestionPersonnel.getEmployes().get(0);
+        assertEquals(type, employe.type.getLabel());
+        assertEquals(nom, employe.name);
 
         // Vérifier le salaire final calculé (20000 * 0.6 = 12000)
-        String employeId = (String) employe[0];
-        assertEquals(12000.0, gestionPersonnel.salairesEmployes.get(employeId), 0.01);
+        String employeId = employe.id;
+        assertEquals(12000.0, gestionPersonnel.getSalairesEmployes().get(employeId), 0.01);
     }
 
     @Test
@@ -133,9 +133,9 @@ class GestionPersonnelTest {
         gestionPersonnel.ajouteSalarie("STAGIAIRE", "Charlie", 20000, 0, "IT");
 
         // Then
-        assertEquals(3, gestionPersonnel.employes.size());
-        assertEquals(3, gestionPersonnel.salairesEmployes.size());
-        assertEquals(3, gestionPersonnel.logs.size());
+        assertEquals(3, gestionPersonnel.getEmployes().size());
+        assertEquals(3, gestionPersonnel.getSalairesEmployes().size());
+        assertEquals(3, gestionPersonnel.getLogs().size());
     }
 
     @Test
@@ -147,8 +147,8 @@ class GestionPersonnelTest {
         gestionPersonnel.ajouteSalarie("DEVELOPPEUR", nom, 50000, 3, "IT");
 
         // Then
-        assertEquals(1, gestionPersonnel.logs.size());
-        assertTrue(gestionPersonnel.logs.get(0).contains("Ajout de l'employé: " + nom));
+        assertEquals(1, gestionPersonnel.getLogs().size());
+        assertTrue(gestionPersonnel.getLogs().get(0).contains("Ajout de l'employé: " + nom));
     }
 
     @Test
@@ -158,8 +158,8 @@ class GestionPersonnelTest {
         gestionPersonnel.ajouteSalarie("DEVELOPPEUR", "Bob", 50000, 3, "IT");
 
         // Then
-        String id1 = (String) gestionPersonnel.employes.get(0)[0];
-        String id2 = (String) gestionPersonnel.employes.get(1)[0];
+        String id1 = gestionPersonnel.getEmployes().get(0).id;
+        String id2 = gestionPersonnel.getEmployes().get(1).id;
 
         assertNotNull(id1);
         assertNotNull(id2);
@@ -172,9 +172,9 @@ class GestionPersonnelTest {
         gestionPersonnel.ajouteSalarie("DEVELOPPEUR", "Test", 50000, 5, "IT");
 
         // Then
-        String employeId = (String) gestionPersonnel.employes.get(0)[0];
+        String employeId = gestionPersonnel.getEmployes().get(0).id;
         // Avec experience = 5, pas de bonus (condition > 5)
-        assertEquals(60000.0, gestionPersonnel.salairesEmployes.get(employeId), 0.01);
+        assertEquals(60000.0, gestionPersonnel.getSalairesEmployes().get(employeId), 0.01);
     }
 
     @Test
@@ -183,9 +183,9 @@ class GestionPersonnelTest {
         gestionPersonnel.ajouteSalarie("DEVELOPPEUR", "Test", 50000, 6, "IT");
 
         // Then
-        String employeId = (String) gestionPersonnel.employes.get(0)[0];
+        String employeId = gestionPersonnel.getEmployes().get(0).id;
         // Avec experience = 6, bonus appliqué (condition > 5)
-        assertEquals(69000.0, gestionPersonnel.salairesEmployes.get(employeId), 0.01);
+        assertEquals(69000.0, gestionPersonnel.getSalairesEmployes().get(employeId), 0.01);
     }
 
     @Test
@@ -194,9 +194,9 @@ class GestionPersonnelTest {
         gestionPersonnel.ajouteSalarie("CHEF DE PROJET", "Test", 60000, 3, "RH");
 
         // Then
-        String employeId = (String) gestionPersonnel.employes.get(0)[0];
+        String employeId = gestionPersonnel.getEmployes().get(0).id;
         // Avec experience = 3, pas de bonus (condition > 3)
-        assertEquals(90000.0, gestionPersonnel.salairesEmployes.get(employeId), 0.01);
+        assertEquals(95000.0, gestionPersonnel.getSalairesEmployes().get(employeId), 0.01);
     }
 
     @Test
@@ -205,8 +205,8 @@ class GestionPersonnelTest {
         gestionPersonnel.ajouteSalarie("CHEF DE PROJET", "Test", 60000, 4, "RH");
 
         // Then
-        String employeId = (String) gestionPersonnel.employes.get(0)[0];
+        String employeId = gestionPersonnel.getEmployes().get(0).id;
         // Avec experience = 4, bonus appliqué (condition > 3)
-        assertEquals(99000.0, gestionPersonnel.salairesEmployes.get(employeId), 0.01);
+        assertEquals(104000.0, gestionPersonnel.getSalairesEmployes().get(employeId), 0.01);
     }
 }
