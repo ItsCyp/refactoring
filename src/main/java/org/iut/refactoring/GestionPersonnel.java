@@ -7,7 +7,7 @@ public class GestionPersonnel {
 
     private final ArrayList<Employe> employes = new ArrayList<>();
     private final HashMap<String, Double> salairesEmployes = new HashMap<>();
-    public ArrayList<String> logs = new ArrayList<>();
+    private final ArrayList<String> logs = new ArrayList<>();
 
     public void ajouteSalarie(String typeStr, String nom, double salaireDeBase, int experience, String equipe) {
         TypeEmploye type = TypeEmploye.valueOf(typeStr.replace(" ", "_"));
@@ -22,9 +22,9 @@ public class GestionPersonnel {
     }
 
     public double calculSalaire(String employeId) {
-        Object[] emp = null;
-        for (Object[] e : employes) {
-            if (e[0].equals(employeId)) {
+        Employe emp = null;
+        for (Employe e : employes) {
+            if (e.id.equals(employeId)) {
                 emp = e;
                 break;
             }
@@ -34,9 +34,9 @@ public class GestionPersonnel {
             return 0;
         }
 
-        String type = (String) emp[1];
-        double salaireDeBase = (double) emp[3];
-        int experience = (int) emp[4];
+        String type = emp.type.name();
+        double salaireDeBase = emp.salaireBase;
+        int experience = emp.experience;
 
         double salaireFinal = salaireDeBase;
         if (type.equals("DEVELOPPEUR")) {
@@ -160,6 +160,19 @@ public class GestionPersonnel {
             bonus = 0; // Pas de bonus
         }
         return bonus;
+    }
+
+
+    public ArrayList<Employe> getEmployes() {
+        return employes;
+    }
+
+    public HashMap<String, Double> getSalairesEmployes() {
+        return salairesEmployes;
+    }
+
+    public ArrayList<String> getLogs() {
+        return logs;
     }
 }
 
