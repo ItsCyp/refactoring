@@ -5,37 +5,18 @@ import java.time.*;
 
 public class GestionPersonnel {
 
-    public ArrayList<Object[]> employes = new ArrayList<>();
-    public HashMap<String, Double> salairesEmployes = new HashMap<>();
+    private final ArrayList<Employe> employes = new ArrayList<>();
+    private final HashMap<String, Double> salairesEmployes = new HashMap<>();
     public ArrayList<String> logs = new ArrayList<>();
 
-    public void ajouteSalarie(String type, String nom, double salaireDeBase, int experience, String equipe) {
-        Object[] emp = new Object[6];
-        emp[0] = UUID.randomUUID().toString();
-        emp[1] = type;
-        emp[2] = nom;
-        emp[3] = salaireDeBase;
-        emp[4] = experience;
-        emp[5] = equipe;
+    public void ajouteSalarie(String typeStr, String nom, double salaireDeBase, int experience, String equipe) {
+        TypeEmploye type = TypeEmploye.valueOf(typeStr.replace(" ", "_"));
 
+        Employe emp = new Employe(type, nom, salaireDeBase, experience, equipe);
         employes.add(emp);
 
-        double salaireFinal = salaireDeBase;
-        if (type.equals("DEVELOPPEUR")) {
-            salaireFinal = salaireDeBase * 1.2;
-            if (experience > 5) {
-                salaireFinal = salaireFinal * 1.15;
-            }
-        } else if (type.equals("CHEF DE PROJET")) {
-            salaireFinal = salaireDeBase * 1.5;
-            if (experience > 3) {
-                salaireFinal = salaireFinal * 1.1;
-            }
-        } else if (type.equals("STAGIAIRE")) {
-            salaireFinal = salaireDeBase * 0.6;
-        }
-
-        salairesEmployes.put((String)emp[0], salaireFinal);
+        double salaireFinal = calculSalaire(emp.id);
+        salairesEmployes.put(emp.id, salaireFinal);
 
         logs.add(LocalDateTime.now() + " - Ajout de l'employé: " + nom);
     }
