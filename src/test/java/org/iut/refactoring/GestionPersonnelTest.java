@@ -209,4 +209,13 @@ class GestionPersonnelTest {
         // Avec experience = 4, bonus appliqué (condition > 3)
         assertEquals(104000.0, gestionPersonnel.getSalairesEmployes().get(employeId), 0.01);
     }
+
+    @Test
+    void testCalculBonusAnnuel() {
+        gestionPersonnel.ajouteSalarie("DEVELOPPEUR", "Alice", 50000, 6, "IT");
+        String id = gestionPersonnel.getEmployes().get(0).id;
+
+        // 50000 * 0.1 = 5000 ; >5 ans → *1.5 = 7500
+        assertEquals(7500.0, gestionPersonnel.calculBonusAnnuel(id), 0.01);
+    }
 }

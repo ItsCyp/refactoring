@@ -7,7 +7,7 @@ public class GestionPersonnel {
 
     private final ArrayList<Employe> employes = new ArrayList<>();
     private final HashMap<String, Double> salairesEmployes = new HashMap<>();
-    private final ArrayList<String> logs = new ArrayList<>();
+    private final LogService logService = new LogService();
 
     public void ajouteSalarie(String typeStr, String nom, double salaireDeBase, int experience, String equipe) {
         TypeEmploye type = TypeEmploye.fromString(typeStr);
@@ -18,7 +18,7 @@ public class GestionPersonnel {
         double salaireFinal = calculSalaire(emp.id);
         salairesEmployes.put(emp.id, salaireFinal);
 
-        logs.add(LocalDateTime.now() + " - Ajout de l'employé: " + nom);
+        logService.add("Ajout de l'employé: " + nom);
     }
 
     public double calculSalaire(String employeId) {
@@ -44,27 +44,30 @@ public class GestionPersonnel {
         logService.add("Rapport généré: " + typeRapport);
     }
 
-    public void avancementEmploye(String employeId, String newType) {
-        for (Object[] emp : employes) {
-            if (emp[0].equals(employeId)) {
-                emp[1] = newType;
+    public void avancementEmploye(String employeId, String newTypeStr) {
+        TypeEmploye newType = TypeEmploye.fromString(newTypeStr);
 
-                double baseSalary = (double) emp[3];
+        for (Employe emp : employes) {
+            if (emp.id.equals(employeId)) {
+                emp.type = newType;
+
                 double nouveauSalaire = calculSalaire(employeId);
                 salairesEmployes.put(employeId, nouveauSalaire);
 
-                logs.add(LocalDateTime.now() + " - Employé promu: " + emp[2]);
+                logService.add("Employé promu: " + emp.name);
                 System.out.println("Employé promu avec succès!");
                 return;
             }
         }
+
         System.out.println("ERREUR: impossible de trouver l'employé");
+
     }
 
-    public ArrayList<Object[]> getEmployesParDivision(String division) {
-        ArrayList<Object[]> resultat = new ArrayList<>();
-        for (Object[] emp : employes) {
-            if (emp[5].equals(division)) {
+    public List<Employe>  getEmployesParDivision(String division) {
+        List<Employe> resultat = new ArrayList<>();
+        for (Employe emp : employes) {
+            if (emp.division.equals(division)) {
                 resultat.add(emp);
             }
         }
@@ -72,43 +75,38 @@ public class GestionPersonnel {
     }
 
     public void printLogs() {
-        System.out.println("=== LOGS ===");
-        for (String log : logs) {
-            System.out.println(log);
-        }
+        logService.print();
     }
 
     public double calculBonusAnnuel(String employeId) {
-        Object[] emp = null;
-        for (Object[] e : employes) {
-            if (e[0].equals(employeId)) {
-                emp = e;
-                break;
+        for (Employe emp : employes) {
+            if (emp.id.equals(employeId)) {
+
+                double salaireDeBase = emp.salaireBase;
+                int experience = emp.experience;
+
+                switch (emp.type) {
+                    case DEVELOPPEUR:
+                        double bonus = salaireDeBase * 0.1;
+                        if (experience > 5) {
+                            bonus *= 1.5;
+                        }
+                        return bonus;
+
+                    case CHEF_DE_PROJET:
+                        bonus = salaireDeBase * 0.2;
+                        if (experience > 3) {
+                            bonus *= 1.3;
+                        }
+                        return bonus;
+
+                    case STAGIAIRE:
+                        return 0;
+                }
             }
         }
-        if (emp == null) return 0;
-
-        String type = (String) emp[1];
-        int experience = (int) emp[4];
-        double salaireDeBase = (double) emp[3];
-
-        double bonus = 0;
-        if (type.equals("DEVELOPPEUR")) {
-            bonus = salaireDeBase * 0.1;
-            if (experience > 5) {
-                bonus = bonus * 1.5;
-            }
-        } else if (type.equals("CHEF DE PROJET")) {
-            bonus = salaireDeBase * 0.2;
-            if (experience > 3) {
-                bonus = bonus * 1.3;
-            }
-        } else if (type.equals("STAGIAIRE")) {
-            bonus = 0; // Pas de bonus
-        }
-        return bonus;
+        return 0;
     }
-
 
     public ArrayList<Employe> getEmployes() {
         return employes;
@@ -118,8 +116,8 @@ public class GestionPersonnel {
         return salairesEmployes;
     }
 
-    public ArrayList<String> getLogs() {
-        return logs;
+    public List<String> getLogs() {
+        return logService.getLogs();
     }
 }
 
